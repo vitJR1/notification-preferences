@@ -16,6 +16,7 @@ import * as Joi from 'joi';
         GRAPHQL_PATH: Joi.string().default('/graphql'),
         GRAPHQL_INTROSPECTION: Joi.boolean().default(true),
         GRAPHQL_LANDING_PAGE: Joi.boolean().default(true),
+        GRAPHQL_CSRF_PREVENTION: Joi.boolean().default(true),
         DATABASE_HOST: Joi.string().required(),
         DATABASE_PORT: Joi.number().port().default(5432),
         DATABASE_USER: Joi.string().required(),

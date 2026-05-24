@@ -16,8 +16,6 @@ import { BusinessError } from '../errors/business-error';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService): ApolloDriverConfig => {
-        const isProduction =
-          configService.get<string>('NODE_ENV') === 'production';
         const enableLandingPage = configService.getOrThrow<boolean>(
           'GRAPHQL_LANDING_PAGE',
         );
@@ -30,10 +28,12 @@ import { BusinessError } from '../errors/business-error';
           introspection: configService.getOrThrow<boolean>(
             'GRAPHQL_INTROSPECTION',
           ),
-          csrfPrevention: true,
+          csrfPrevention: configService.getOrThrow<boolean>(
+            'GRAPHQL_CSRF_PREVENTION',
+          ),
           cache: 'bounded',
           plugins: [
-            enableLandingPage && !isProduction
+            enableLandingPage
               ? ApolloServerPluginLandingPageLocalDefault({ embed: true })
               : ApolloServerPluginLandingPageDisabled(),
           ],
