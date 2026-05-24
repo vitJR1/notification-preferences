@@ -5,9 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './domain/entities/user.entity';
 import { usersRepositoryToken } from './domain/repository/users-repository-token';
 import { UsersPostgresRepository } from './infrastructure/database/postgres/users-postgres-repository';
+import { UsersNotificationPreferencesModule } from '../users-notification-preferences/users-notification-preferences.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [
+    TypeOrmModule.forFeature([User]),
+    UsersNotificationPreferencesModule,
+  ],
   providers: [
     {
       useClass: UsersPostgresRepository,

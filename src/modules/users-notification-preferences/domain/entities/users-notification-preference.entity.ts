@@ -3,9 +3,12 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { User } from '../../../users/domain/entities/user.entity';
 import { NotificationChannel } from '../types/notification-channel';
 import { NotificationType } from '../types/notification-type';
 
@@ -17,6 +20,16 @@ export class UsersNotificationPreference {
 
   @Column({ name: 'user_id', type: 'varchar' })
   userId: string;
+
+  @ManyToOne(
+    () => User,
+    (user) => user.notificationPreferences,
+    {
+      onDelete: 'CASCADE',
+    },
+  )
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 
   @Column({ name: 'notification_type', type: 'varchar' })
   notificationType: NotificationType;

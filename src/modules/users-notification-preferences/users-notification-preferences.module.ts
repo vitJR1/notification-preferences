@@ -16,5 +16,6 @@ import { UsersNotificationPreferencesResolver } from './interface/graphql/users-
     UsersNotificationPreferencesResolver,
     UsersNotificationPreferencesService,
   ],
+  exports: [UsersNotificationPreferencesService],
 })
 export class UsersNotificationPreferencesModule {}

@@ -14,8 +14,15 @@ export class UsersService {
     return this.repo.create(createUserInput);
   }
 
-  findAll() {
-    return this.repo.findAndCount();
+  async findAll() {
+    const [items, count] = await this.repo.findAndCount();
+
+    return {
+      items,
+      info: {
+        count,
+      },
+    };
   }
 
   findOne(id: string) {

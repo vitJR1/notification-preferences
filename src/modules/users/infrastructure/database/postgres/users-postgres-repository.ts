@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { DEFAULT_NOTIFICATION_PREFERENCES } from 'src/modules/users-notification-preferences/domain/default-preferences';
+import { UsersNotificationPreference } from 'src/modules/users-notification-preferences/domain/entities/users-notification-preference.entity';
 import {
   CreateUser,
   UpdateUser,
 } from 'src/modules/users/domain/repository/types';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { User } from '../../../domain/entities/user.entity';
 import { UsersRepository } from '../../../domain/repository/users-repository';
 import { UserNotFoundError } from '../../../domain/errors/user-not-found.error';
@@ -14,12 +16,33 @@ export class UsersPostgresRepository implements UsersRepository {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    private readonly dataSource: DataSource,
   ) {}
 
   async create(createUser: CreateUser): Promise<User> {
-    const user = this.usersRepository.create(createUser);
+    return this.dataSource.transaction(async (entityManager) => {
+      const usersRepository = entityManager.getRepository(User);
+      const usersNotificationPreferencesRepository =
+        entityManager.getRepository(UsersNotificationPreference);
 
-    return this.usersRepository.save(user);
+      const user = await usersRepository.save(
+        usersRepository.create(createUser),
+      );
+
+      const defaultPreferences = DEFAULT_NOTIFICATION_PREFERENCES.map(
+        (defaultPreference) =>
+          usersNotificationPreferencesRepository.create({
+            userId: user.id,
+            notificationType: defaultPreference.notificationType,
+            channel: defaultPreference.channel,
+            enabled: defaultPreference.enabled,
+          }),
+      );
+
+      await usersNotificationPreferencesRepository.save(defaultPreferences);
+
+      return user;
+    });
   }
 
   async update(updateUser: UpdateUser): Promise<User> {

@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { UsersNotificationPreferencesService } from '../../../users-notification-preferences/application/users-notification-preferences.service';
 import { UsersService } from '../../application/users.service';
 import { UsersResolver } from './users.resolver';
 
@@ -11,6 +12,10 @@ describe('UsersResolver', () => {
         UsersResolver,
         {
           provide: UsersService,
+          useValue: {},
+        },
+        {
+          provide: UsersNotificationPreferencesService,
           useValue: {},
         },
       ],

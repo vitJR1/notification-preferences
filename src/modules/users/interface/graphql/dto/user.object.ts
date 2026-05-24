@@ -15,5 +15,5 @@ export class UserObject {
   createdAt: Date;
 
   @Field(() => Date)
-  updateAt: Date;
+  updatedAt: Date;
 }
