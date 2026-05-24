@@ -1,12 +1,10 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, InputType } from '@nestjs/graphql';
 import { NotificationChannel } from '../../../domain/types/notification-channel';
 import { NotificationType } from '../../../domain/types/notification-type';
+import { QuietHoursInput } from './quiet-hours.input';
 
-@ObjectType()
-export class UsersNotificationPreferenceObject {
-  @Field()
-  id: string;
-
+@InputType()
+export class SetUserNotificationPreferenceInput {
   @Field()
   userId: string;
 
@@ -19,12 +17,6 @@ export class UsersNotificationPreferenceObject {
   @Field()
   enabled: boolean;
 
-  @Field({ nullable: true })
-  quietHoursStart: string | null;
-
-  @Field({ nullable: true })
-  quietHoursEnd: string | null;
-
-  @Field({ nullable: true })
-  timezone: string | null;
+  @Field(() => QuietHoursInput, { nullable: true })
+  quietHours?: QuietHoursInput;
 }

@@ -5,7 +5,9 @@ import { UsersNotificationPreference } from '../../../domain/entities/users-noti
 import { UsersNotificationPreferenceNotFoundError } from '../../../domain/errors/users-notification-preference-not-found.error';
 import {
   CreateUsersNotificationPreference,
+  PreferenceIdentity,
   UpdateUsersNotificationPreference,
+  UpsertUsersNotificationPreference,
 } from '../../../domain/repository/types';
 import { UsersNotificationPreferencesRepository } from '../../../domain/repository/users-notification-preferences-repository';
 
@@ -18,13 +20,20 @@ export class UsersNotificationPreferencesPostgresRepository
     private readonly usersNotificationPreferencesRepository: Repository<UsersNotificationPreference>,
   ) {}
 
+  createEntity(
+    createUsersNotificationPreference: CreateUsersNotificationPreference,
+  ): UsersNotificationPreference {
+    return this.usersNotificationPreferencesRepository.create(
+      createUsersNotificationPreference,
+    );
+  }
+
   async create(
     createUsersNotificationPreference: CreateUsersNotificationPreference,
   ): Promise<UsersNotificationPreference> {
-    const usersNotificationPreference =
-      this.usersNotificationPreferencesRepository.create(
-        createUsersNotificationPreference,
-      );
+    const usersNotificationPreference = this.createEntity(
+      createUsersNotificationPreference,
+    );
 
     return this.usersNotificationPreferencesRepository.save(
       usersNotificationPreference,
@@ -58,6 +67,43 @@ export class UsersNotificationPreferencesPostgresRepository
     }
 
     return usersNotificationPreference;
+  }
+
+  async findByUserId(userId: string): Promise<UsersNotificationPreference[]> {
+    return this.usersNotificationPreferencesRepository.find({
+      where: { userId },
+    });
+  }
+
+  async findByIdentity({
+    userId,
+    notificationType,
+    channel,
+  }: PreferenceIdentity): Promise<UsersNotificationPreference | null> {
+    return this.usersNotificationPreferencesRepository.findOneBy({
+      userId,
+      notificationType,
+      channel,
+    });
+  }
+
+  async upsertPreference(
+    upsertUsersNotificationPreference: UpsertUsersNotificationPreference,
+  ): Promise<UsersNotificationPreference> {
+    const existing = await this.findByIdentity(
+      upsertUsersNotificationPreference,
+    );
+
+    if (existing) {
+      await this.usersNotificationPreferencesRepository.update(
+        existing.id,
+        upsertUsersNotificationPreference,
+      );
+
+      return this.findOne(existing.id);
+    }
+
+    return this.create(upsertUsersNotificationPreference);
   }
 
   async delete(id: string): Promise<void> {
