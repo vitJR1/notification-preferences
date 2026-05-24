@@ -1,0 +1,45 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: notification-preferences-app
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      DATABASE_HOST: postgresql
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    networks:
+      - ntfpref
+
+  postgresql:
+    image: postgres:16-alpine
+    container_name: notification-preferences-postgresql
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-ntfpref}
+      POSTGRES_USER: ${DATABASE_USER:-ntfpref}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-ntfpref}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ntfpref -d ntfpref"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ntfpref
+
+networks:
+  ntfpref:
+    name: ntfpref
+    driver: bridge
+
+volumes:
+  postgresql-data:
