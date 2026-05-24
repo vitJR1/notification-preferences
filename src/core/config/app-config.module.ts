@@ -11,6 +11,11 @@ import * as Joi from 'joi';
           .valid('development', 'production', 'test')
           .default('development'),
         PORT: Joi.number().port().default(3000),
+        API_PREFIX: Joi.string().default('api'),
+        CORS_ORIGIN: Joi.string().default('*'),
+        GRAPHQL_PATH: Joi.string().default('/graphql'),
+        GRAPHQL_INTROSPECTION: Joi.boolean().default(true),
+        GRAPHQL_LANDING_PAGE: Joi.boolean().default(true),
         DATABASE_HOST: Joi.string().required(),
         DATABASE_PORT: Joi.number().port().default(5432),
         DATABASE_USER: Joi.string().required(),

@@ -5,11 +5,13 @@ import { UsersModule } from './modules/users/users.module';
 import { UsersNotificationPreferencesModule } from './modules/users-notification-preferences/users-notification-preferences.module';
 import { AppConfigModule } from './core/config/app-config.module';
 import { DatabaseModule } from './core/database/database.module';
+import { AppGraphqlModule } from './core/graphql/app-graphql.module';
 
 @Module({
   imports: [
     AppConfigModule,
     DatabaseModule,
+    AppGraphqlModule,
     UsersModule,
     UsersNotificationPreferencesModule,
   ],
